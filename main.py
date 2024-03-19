@@ -32,7 +32,7 @@ class Weather():
     print(f"Температура: {temperature}C")
 
 
-class Program(Weather):
+class Program():
   city = str(input("Город: "))
   userAgent = str(input("User-Agent: ")) # example Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 
   # find it on https://suip.biz/ru/?act=my-user-agent
