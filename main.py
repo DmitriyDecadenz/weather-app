@@ -4,39 +4,48 @@ import logging
 
 
 class Weather():
-  
-  @classmethod
-  def check_weather(cls,city,userAgent):
-    """send GET request to google with custom query params.
-    Parsing html, find time,weather infomation.
-    And doing output and logging info.
-    """
-    headers = {
-        "User-Agent" : userAgent
-        }
-
-    responce = requests.get(f"https://www.google.com/search?q=погода+в+{city}", headers=headers)
-
+  def __init__(self,city):
+    self.city = city
+    self.headers = {
+      "User-agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+      }
+    
+    
+  def _check_weather(self):
+    """Find and Return data"""
+    responce = requests.get(f"https://www.google.com/search?q=погода+в+{self.city}", headers=self.headers)
     soup = BeautifulSoup(responce.text, "html.parser")
-
     temperature = soup.select("#wob_tm")[0].getText()
     time = soup.select("#wob_dts")[0].getText()
+    
+    return temperature, time, self.city
+
+class log:
+
+  def _log_to_file(data) -> None:
+    """logging data"""
     logger = logging.getLogger(__name__)
     logging.basicConfig(filename="log.txt", level=logging.INFO)
-    logging.info(f"Город: {city}")
-    logging.info(f"Время: {time}")
-    logging.info(f"Температура: {temperature}C")
-
-    print(city)
-    print(time)
-    print(f"Температура: {temperature}C")
-
-
+    logging.info(data)
+    
+    
 class Program():
-  city = str(input("Город: "))
-  userAgent = str(input("User-Agent: ")) # example Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 
-  # find it on https://suip.biz/ru/?act=my-user-agent
-  Weather.check_weather(city=city, userAgent=userAgent)
+  
+  def __init__(self):
+    self.city_name = self._ask_city()
+    self.weatherapp = Weather(self.city_name)
+    self.log_data = log
+    
+  def display(self) -> None:
+    data = self.weatherapp._check_weather()
+    print(data)
+    self.log_data._log_to_file(data)
+    
+  def _ask_city(self):
+    city = input("Город: ")
+    return city
 
-
-Program()
+if __name__ == "__main__":
+  app = Program()
+  
+  app.display()
